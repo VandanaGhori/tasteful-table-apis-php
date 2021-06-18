@@ -45,7 +45,7 @@
         http_response_code(200);
 
         // show recipes data in json format
-        echo json_encode($recipe_arr);
+        echo json_encode($recipe_arr,JSON_UNESCAPED_SLASHES);
     }
     else {
         // set response code - 404 not found

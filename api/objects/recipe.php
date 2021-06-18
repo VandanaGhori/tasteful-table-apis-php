@@ -1,7 +1,8 @@
 <?php
-    class Recipe {
+        class Recipe {
         private $conn;
         private $table_name = "recipe";
+
 
         //Constructor which accept the database object
         public function __construct($db)
