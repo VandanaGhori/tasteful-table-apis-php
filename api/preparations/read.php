@@ -4,59 +4,56 @@
 
     // include database and object files
     include_once '../config/database.php';
-    include_once '../objects/ingredients.php';
+    include_once '../objects/preparation.php';
 
-    // instantiate database and ingredients object
+    // instantiate database and preparations object
     $database = new Database();
     $db = $database->getConnection();
 
     // call Constructor method of Ingredients and pass db to it and get connection as a response
-    $ingredients = new Ingredients($db);
+    $preparation = new Preparation($db);
 
-
-    // Query Ingredients
+    // Query Preparations
     if(isset($_GET['id'])) {
         // getting id from the parameters of URL
         $id = $_GET['id'];
         //print_r($id);
-        $stmt = $ingredients->getIngredientsByID($id);
+        $stmt = $preparation->getPreparationsByID($id);
     } else {
-        $stmt = $ingredients->getAllIngredients();
+        $stmt = $preparation->getAllPreparationData();
     }
 
-    //print_r($stmt2);
     $num = $stmt->rowCount();
 
     // check if more than 0 record found
     if ($num > 0) {
-        $ingredients_arr = array();
+        $preparation_arr = array();
 
         // pushing the values in key name "data"
-        $ingredients_arr["data"] = array();
+        $preparation_arr["data"] = array();
 
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
-            $ingredients_item = array(
+            $preparation_item = array(
                 "id" => $row['id'],
                 "rec_id" => $row['rec_id'],
-                "name" => $row['name'],
-                "qty" => $row['qty'],
-                "img_url" => $row['img_url']
+                "steps" => $row['steps'],
+                "order_no" => $row['order_no']
             );
 
-            array_push($ingredients_arr["data"], $ingredients_item);
+            array_push($preparation_arr["data"], $preparation_item);
         };
 
         // set response code - 200 OK
         http_response_code(200);
 
-        // show ingredients data in JSON format
-        echo json_encode($ingredients_arr, JSON_UNESCAPED_SLASHES);
+        // show preparation data in JSON format
+        echo json_encode($preparation_arr, JSON_UNESCAPED_SLASHES);
     } else {
 
         // set response code - 404 not found
         http_response_code(404);
 
-        // tell the user no ingredients are found
-        echo json_encode(array("message" => "No Ingredients Found."));
+        // tell the user no preparations steps are found
+        echo json_encode(array("message" => "No Preparations Steps Found."));
     }
