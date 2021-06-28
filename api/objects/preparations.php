@@ -1,5 +1,5 @@
 <?php
-class Preparation {
+class Preparations {
     private $conn;
     private $table_name = "preparation";
 

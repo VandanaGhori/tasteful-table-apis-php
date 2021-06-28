@@ -13,9 +13,9 @@
     // call Constructor method of Ingredients and pass db to it and get connection as a response
     $ingredients = new Ingredients($db);
 
-
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     // Query Ingredients
-    if(isset($_GET['id'])) {
+    if (isset($_GET['id'])) {
         // getting id from the parameters of URL
         $id = $_GET['id'];
         //print_r($id);
@@ -60,3 +60,4 @@
         // tell the user no ingredients are found
         echo json_encode(array("message" => "No Ingredients Found."));
     }
+}

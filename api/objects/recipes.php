@@ -1,5 +1,5 @@
 <?php
-        class Recipe {
+        class Recipes {
         private $conn;
         private $table_name = "recipe";
 

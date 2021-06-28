@@ -4,21 +4,22 @@
 
     // include database and object files
     include_once '../config/database.php';
-    include_once '../objects/recipe.php';
+    include_once '../objects/recipes.php';
 
-    // instantiate database and recipe object
+    // instantiate database and recipes object
     $database = new Database();
     $db = $database->getConnection();
 
     // initialize object and pass database to the constructor and return the connection
-    $recipe = new Recipe($db);
+    $recipe = new Recipes($db);
 
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     // query recipes
     $stmt = $recipe->getAllRecipe();
     $num = $stmt->rowCount();
 
     // check if more than 0 record found
-    if($num > 0) {
+    if ($num > 0) {
         // recipes array
         $recipe_arr = array();
 
@@ -45,15 +46,15 @@
         http_response_code(200);
 
         // show recipes data in json format
-        echo json_encode($recipe_arr,JSON_UNESCAPED_SLASHES);
-    }
-    else {
+        echo json_encode($recipe_arr, JSON_UNESCAPED_SLASHES);
+    } else {
         // set response code - 404 not found
         http_response_code(404);
 
         // tell the user no recipes found
         echo json_encode(array("message" => "No Recipes Found."));
     }
+}
 
 
 

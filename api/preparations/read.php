@@ -4,17 +4,18 @@
 
     // include database and object files
     include_once '../config/database.php';
-    include_once '../objects/preparation.php';
+    include_once '../objects/preparations.php';
 
     // instantiate database and preparations object
     $database = new Database();
     $db = $database->getConnection();
 
     // call Constructor method of Ingredients and pass db to it and get connection as a response
-    $preparation = new Preparation($db);
+    $preparation = new Preparations($db);
 
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     // Query Preparations
-    if(isset($_GET['id'])) {
+    if (isset($_GET['id'])) {
         // getting id from the parameters of URL
         $id = $_GET['id'];
         //print_r($id);
@@ -57,3 +58,4 @@
         // tell the user no preparations steps are found
         echo json_encode(array("message" => "No Preparations Steps Found."));
     }
+}
