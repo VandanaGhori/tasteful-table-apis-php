@@ -38,7 +38,7 @@ class Users {
     function newUserRegistration($user) {
         // Insert user's information to the table
         $query = "Insert into " .$this -> table_name ." (name,email,password) 
-            values ('$user[0]','$user[1]','$user[2]')";
+            values ('{$user['name']}','{$user['email']}','{$user['password']}')";
 
         // prepared query statement
         $stmt = $this->conn->prepare($query);

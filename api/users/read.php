@@ -27,21 +27,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo sendErrorResponse("User already exist.");
 
         } else {        // if user is new and email id is unique.
-            $user_data = array($_POST['name'], $_POST['email'], $_POST['password']);
+            $user_data['name'] = $_POST['name'];
+            $user_data['email'] = $_POST['email'];
+            $user_data['password'] = $_POST['password'];
+
             $result = $user->newUserRegistration($user_data);
 
-            print_r($result);
-            if ($result) {
+            // Fetch latest inserted user details along with it's id.
+            $stmt = $user->getUsersByEmail($user_data['email']);
+
+            $num = $stmt->rowCount();
+
+            if ($result && ($num > 0)) {
+
+                $user_arr = array();
+
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+
+                    $user_details = array(
+                        "id" => intval($row['id']),
+                        "name" => $row['name'],
+                        "email" => $row['email'],
+                        "password" => $row['password']
+                    );
+
+                    array_push($user_arr, $user_details);
+                };
+
                 // set response code - 200 OK
                 http_response_code(200);
-                $response = array("success" => true, "message" => "User registered successfully!");
-                echo json_encode($response);
+
+                //$response = array("success" => true, "message" => "User registered successfully!");
+                echo json_encode($user_arr);
             } else {
                 http_response_code(404);
                 echo sendErrorResponse("Opps! Something went wrong.");
             }
-            // show preparation data in JSON format
-            //echo json_encode(array("message" => "User created successfully."));
         }
     }
 }
