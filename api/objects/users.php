@@ -24,6 +24,16 @@ class Users {
 
     }
 
+    function checkUserLogin($user) {
+        // Fetch user's information from the user table for authentication
+        $query = "Select * from " . $this->table_name . "  
+            where email = '". $user['email']."' and password = '" .$user['password']."'";
+
+        //echo "Login Query\n";
+        //print_r($query);
+        return $this->execute_query($query);
+    }
+
     function execute_query($query) {
         // prepared query statement
         $stmt = $this->conn->prepare($query);
