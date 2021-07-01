@@ -15,45 +15,22 @@
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     // query recipes
-    $stmt = $recipe->getAllRecipe();
-    $num = $stmt->rowCount();
+    $response = $recipe->getAllRecipe();
 
-    // check if more than 0 record found
-    if ($num > 0) {
-        // recipes array
-        $recipe_arr = array();
-
-        //pushing the values in key name "data"
-        $recipe_arr["data"] = array();
-
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            // extract individual rows
-            // this will make $row['name'] to
-            // just $name only
-            //extract($row);
-
-            $recipe_item = array(
-                "id" => $row['id'],
-                "name" => $row['name'],
-                "img_url" => $row['img_url'],
-                "time" => $row['time']
-            );
-
-            array_push($recipe_arr["data"], $recipe_item);
-        }
-
-        // set response code - 200 OK
-        http_response_code(200);
-
-        // show recipes data in json format
-        echo json_encode($recipe_arr, JSON_UNESCAPED_SLASHES);
+    if($response!=null) {
+        //print_r($response);
+        sendResponse(true,"All Recipes are fetched.",200,$response);
     } else {
-        // set response code - 404 not found
-        http_response_code(404);
-
-        // tell the user no recipes found
-        echo json_encode(array("message" => "No Recipes Found."));
+        sendResponse(false,"Data not found for recipes.",404,$response);
     }
+
+}
+
+// Error Message
+function sendResponse($success = true, $error_msg, $errorCode = 504, $data)
+{
+    $response = array("success" => $success, "error" => $error_msg, "error_code" => $errorCode,"data" => $data);
+    echo json_encode($response);
 }
 
 

@@ -16,107 +16,56 @@ $user = new Users($db);
 // Post Query for user registration
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_POST['name']) || !isset($_POST['email']) || !isset($_POST['password'])) {
-        sendErrorResponse("parameter(s) are missing.");
+        sendResponse(false,"parameter(s) are missing.",422,null);
     } else {
         // if user already exist by email id.
-        $num = ($user->getUsersByEmail($_POST['email']))->rowCount();
-        if ($num > 0) {
-            // Set response code - 404 not found.
-            http_response_code(404);
+        $response = $user->getUsersByEmail($_POST['email']);
 
-            echo sendErrorResponse("User already exist.");
-
-        } else {        // if user is new and email id is unique.
+        if($response[0] == null) {
+            //echo "you can create new user";
+            // if user is new and email id is unique.
             $user_data['name'] = $_POST['name'];
             $user_data['email'] = $_POST['email'];
             $user_data['password'] = $_POST['password'];
 
             $result = $user->newUserRegistration($user_data);
 
-            // Fetch latest inserted user details along with it's id.
-            $stmt = $user->getUsersByEmail($user_data['email']);
-
-            $num = $stmt->rowCount();
-
-            if ($result && ($num > 0)) {
-
-                $user_arr = array();
-
-                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-
-                    $user_details = array(
-                        "id" => intval($row['id']),
-                        "name" => $row['name'],
-                        "email" => $row['email'],
-                        "password" => $row['password']
-                    );
-
-                    array_push($user_arr, $user_details);
-                };
-
-                // set response code - 200 OK
-                http_response_code(200);
-
-                //$response = array("success" => true, "message" => "User registered successfully!");
-                echo json_encode($user_arr);
-            } else {
-                http_response_code(404);
-                echo sendErrorResponse("Opps! Something went wrong.");
+            if($result) {
+                // get recently added user details.
+                $response = $user->getUsersByEmail($_POST['email']);
+                sendResponse(true,"User is successfully registered.",200,$response[0]);
             }
+        } else {
+            // user is already exist
+            sendResponse(false,"User is already exist.",409,null);
         }
     }
 }
 
 // Query Users
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    $response = null;
     if (isset($_GET['email'])) {
+        //echo "get user by email";
         // getting email from the parameters of URL
         $email = $_GET['email'];
         //print_r($email);
-        $stmt = $user->getUsersByEmail($email);
+        $response = $user->getUsersByEmail($email);
+
+        //print_r($response);
+
+        sendResponse(true,"response found for the given email",200,$response[0]);
     } else {
-        $stmt = $user->getAllUsersData();
-    }
-    $num = $stmt->rowCount();
-
-    // check if more than 0 record found
-    if ($num > 0) {
-        $preparation_arr = array();
-
-        // pushing the values in key name "data"
-        //$preparation_arr["data"] = array();
-
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-
-            $preparation_item = array(
-                "id" => $row['id'],
-                "name" => $row['name'],
-                "email" => $row['email'],
-                "password" => $row['password']
-            );
-
-            array_push($preparation_arr, $preparation_item);
-        };
-
-        // set response code - 200 OK
-        http_response_code(200);
-
-        // show preparation data in JSON format
-        echo json_encode($preparation_arr, JSON_UNESCAPED_SLASHES);
-    } else {
-
-        // set response code - 404 not found
-        http_response_code(404);
-
-        // tell the user no preparations steps are found
-        echo json_encode(array("message" => "No Users are Found."));
+        //echo "all user data";
+        $response = $user->getAllUsersData();
+        sendResponse(true,"response found for all user",200,$response);
     }
 }
 
 // Error Message
-function sendErrorResponse($msg)
+function sendResponse($success = true, $error_msg, $errorCode = 504, $data)
 {
-    $response = array("success" => false, "error" => $msg);
+    $response = array("success" => $success, "error" => $error_msg, "error_code" => $errorCode,"data" => $data);
     echo json_encode($response);
 }
 

@@ -19,45 +19,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         // getting id from the parameters of URL
         $id = $_GET['id'];
         //print_r($id);
-        $stmt = $ingredients->getIngredientsByID($id);
+        $response = $ingredients->getIngredientsByID($id);
+        //print_r($response);
+        if($response != null) {
+            //print_r($response);
+            sendResponse(true,"All ingredients are fetched for the given id.",200,$response[0]);
+        } else {
+            sendResponse(false,"Ingredients data are not found for the given id.",404,$response);
+        }
     } else {
-        $stmt = $ingredients->getAllIngredients();
+        $response = $ingredients->getAllIngredients();
+        //print_r($response);
+        if($response != null) {
+            //print_r($response);
+            sendResponse(true,"All ingredients data are fetched.",200,$response);
+        } else {
+            sendResponse(false,"Data not found for ingredients.",404,$response);
+        }
     }
+}
 
-    //print_r($stmt2);
-    $num = $stmt->rowCount();
-
-    // check if more than 0 record found
-    if ($num > 0) {
-        $ingredients_arr = array();
-
-        // pushing the values in key name "data"
-        $ingredients_arr["data"] = array();
-
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-
-            $ingredients_item = array(
-                "id" => $row['id'],
-                "rec_id" => $row['rec_id'],
-                "name" => $row['name'],
-                "qty" => $row['qty'],
-                "img_url" => $row['img_url']
-            );
-
-            array_push($ingredients_arr["data"], $ingredients_item);
-        };
-
-        // set response code - 200 OK
-        http_response_code(200);
-
-        // show ingredients data in JSON format
-        echo json_encode($ingredients_arr, JSON_UNESCAPED_SLASHES);
-    } else {
-
-        // set response code - 404 not found
-        http_response_code(404);
-
-        // tell the user no ingredients are found
-        echo json_encode(array("message" => "No Ingredients Found."));
-    }
+// Error Message
+function sendResponse($success = true, $error_msg, $errorCode = 504, $data)
+{
+    $response = array("success" => $success, "error" => $error_msg, "error_code" => $errorCode,"data" => $data);
+    echo json_encode($response);
 }
