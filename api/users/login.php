@@ -5,6 +5,7 @@ header("Content-Type: application/json; charset=UTF-8");
 // include database and object files
 include_once '../config/database.php';
 include_once '../objects/users.php';
+include_once '../objects/sessions.php';
 
 // instantiate database and preparations object
 $database = new Database();
@@ -28,11 +29,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $result = $user->checkUserLogin($user_data);
 
-            if($result != null) {
+            // For Authenticating token for the logged in User and update it with latest token
+            $session = new Sessions($db);
+            $isAuthenticate = $session->authenticateUserToken($response[0]['id']);
+
+            //print($isAuthenticate);
+            if($isAuthenticate) {
+                if($result != null) {
+                    sendResponse(true,"User is successfully logged in.",200,$result[0]);
+                } else {
+                    sendResponse(false,"Wrong credentials are provided.",404,$result);
+                }
+            } else {
+                sendResponse(false,"User is not authorized",404,$result[0]);
+            }
+
+            /*if($result != null) {
                 sendResponse(true,"User is successfully logged in.",200,$result[0]);
             } else {
                 sendResponse(false,"Wrong credentials are provided.",404,$result);
-            }
+            }*/
 
         } else {
             sendResponse(false,"User is not registered with us. Need to register with us.",401,null);

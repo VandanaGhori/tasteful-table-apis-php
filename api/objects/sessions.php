@@ -22,4 +22,19 @@ class Sessions {
         // Execute Query
         $stmt->execute();
     }
+
+    // Authorization of valid user through token
+    function authenticateUserToken($user_id) {
+        // Check whether user_id is exists into user_session table or not.
+        $query = "Select * from " . $this->table_name . " where user_id = " . $user_id;
+
+        //print_r($query);
+        // prepared query statement
+        $stmt = $this->conn->prepare($query);
+
+        // Execute Query
+        $stmt->execute();
+
+        return $stmt->rowCount();
+    }
 }
