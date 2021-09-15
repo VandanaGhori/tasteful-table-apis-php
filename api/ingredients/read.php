@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         //print_r($response);
         if($response != null) {
             //print_r($response);
-            sendResponse(true,"All ingredients are fetched for the given id.",200,$response[0]);
+            sendResponse(true,"All ingredients are fetched for the given id.",200,$response);
         } else {
             sendResponse(false,"Ingredients data are not found for the given id.",404,$response);
         }

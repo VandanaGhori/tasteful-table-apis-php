@@ -5,6 +5,7 @@ header("Content-Type: application/json; charset=UTF-8");
 // include database and object files
 include_once '../config/database.php';
 include_once '../objects/users.php';
+include_once '../objects/sessions.php';
 
 // instantiate database and preparations object
 $database = new Database();
@@ -34,6 +35,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if($result) {
                 // get recently added user details.
                 $response = $user->getUsersByEmail($_POST['email']);
+
+                // For generating a token and store it into a sessions table
+                $bytes = openssl_random_pseudo_bytes(16,$cStrong);
+                $hex = bin2hex($bytes);
+                $token = $hex.$cStrong;
+                //print($token);
+
+                $userSession = new Sessions($db);
+                $userSession->newUserTokenGenerator($response[0]['id'],$token);
+                $response[0]['token'] = $token;
+
                 sendResponse(true,"User is successfully registered.",200,$response[0]);
             }
         } else {
