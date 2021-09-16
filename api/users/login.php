@@ -29,27 +29,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $result = $user->checkUserLogin($user_data);
 
-            // For Authenticating token for the logged in User and update it with latest token
-            $session = new Sessions($db);
-            $isAuthenticate = $session->authenticateUserToken($response[0]['id']);
+            // For generating a token and store it into a sessions table
+            $bytes = openssl_random_pseudo_bytes(16,$cStrong);
+            $hex = bin2hex($bytes);
+            $token = $hex.$cStrong;
+            //print($token);
 
-            //print($isAuthenticate);
-            if($isAuthenticate) {
-                if($result != null) {
-                    sendResponse(true,"User is successfully logged in.",200,$result[0]);
+            // if user successfully logged in.
+            if($result!=null) {
+                // For Authenticating token for the logged in User_session table in user table and update it with latest token
+                $session = new Sessions($db);
+                $isAuthenticateUserExist = $session->authenticateUserToken($result[0]['id']);
+                //print($isAuthenticateUserExist);
+
+                if($isAuthenticateUserExist) {
+                    $session->updateToken($result[0]['id'],$token);
                 } else {
-                    sendResponse(false,"Wrong credentials are provided.",404,$result);
+                    $session->newUserTokenGenerator($result[0]['id'],$token);
                 }
-            } else {
-                sendResponse(false,"User is not authorized",404,$result[0]);
-            }
-
-            /*if($result != null) {
+                $result[0]['token'] = $token;
                 sendResponse(true,"User is successfully logged in.",200,$result[0]);
             } else {
-                sendResponse(false,"Wrong credentials are provided.",404,$result);
-            }*/
-
+                sendResponse(false,"Wrong credentials are provided.",404,$result[0]);
+            }
         } else {
             sendResponse(false,"User is not registered with us. Need to register with us.",401,null);
         }

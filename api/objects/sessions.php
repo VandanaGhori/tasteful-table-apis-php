@@ -37,4 +37,18 @@ class Sessions {
 
         return $stmt->rowCount();
     }
+
+    // Updating token after login successfully
+    function updateToken($user_session_user_id,$updatedToken) {
+        // Update token in user_session table after logging successfully.
+        $query = "Update " . $this->table_name . " set token='" . $updatedToken . "' where user_id=" . "$user_session_user_id";
+
+        // Preparing the Query
+        $stmt = $this->conn->prepare($query);
+
+        //print_r($stmt);
+
+        // Execute Query
+        $stmt->execute();
+    }
 }

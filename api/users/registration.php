@@ -42,6 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $token = $hex.$cStrong;
                 //print($token);
 
+                // Generate a new token as new user registration is done and store them
+                // into database user_session and and return new token with the response
                 $userSession = new Sessions($db);
                 $userSession->newUserTokenGenerator($response[0]['id'],$token);
                 $response[0]['token'] = $token;
