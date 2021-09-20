@@ -51,4 +51,13 @@ class Sessions {
         // Execute Query
         $stmt->execute();
     }
+
+    function getUserIdFromToken($token)
+    {
+        $query = "Select user_id from " . $this->table_name . " where token = " .$token;
+
+        $stmt = $this->conn->prepare($query);
+
+        return $stmt->execute();
+    }
 }

@@ -1,5 +1,5 @@
 <?php
-    header("Access-Control-Allow-Origin: *");
+    /*header("Access-Control-Allow-Origin: *");
     header("Content-Type: application/json; charset=UTF-8");
 
     // include database and object files
@@ -12,7 +12,7 @@
 
     // call Constructor method of Ingredients and pass db to it and get connection as a response
     $sessions = new Sessions($db);
-    $user = new Users($db);
+    $user = new Users($db);*/
 
 
 
