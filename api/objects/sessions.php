@@ -54,10 +54,24 @@ class Sessions {
 
     function getUserIdFromToken($token)
     {
-        $query = "Select user_id from " . $this->table_name . " where token = " .$token;
+        $query = "Select user_id from " . $this->table_name . " where token = '" . $token ."'";
 
         $stmt = $this->conn->prepare($query);
 
-        return $stmt->execute();
+        $stmt->execute();
+
+        $num = $stmt->rowCount();
+
+        if($num>0) {
+            $user_id = 0;
+
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $user_id = $row['user_id'];
+            };
+
+            return $user_id;
+        } else {
+            return null;
+        }
     }
 }
