@@ -33,15 +33,22 @@
         if(!isset($_GET['rec_id'])) {
             sendResponse(false, "parameter(s) are missing.", 402, null);
         } else {
+
+            // retrieve token from header
+            $headers = getallheaders();
+            $token = $headers["Token"];
+
+            print_r("Token-".$token);
+
             //$user_id = $user_session->getUserIdFromToken($token);
-            $user_id = $user_session->getUserIdFromToken("e3d08d7c12461ab8b0a27c7cf7d777921");
+            $user_id = $user_session->getUserIdFromToken("f14e6148e7e836283ce746f33ef9649d1");
 
             if ($user_id != 0 || $user_id != null) {
                 $isUsersFavourite = $favourites->isFavouriteRecipe($user_id,$_GET['rec_id']);
                 if($isUsersFavourite) {
                     sendResponse(true,"This is user's favourite recipe.",200,true);
                 } else {
-                    sendResponse(false,"This is not user favourite recipe.",404,false);
+                    sendResponse(false,"This is not user favourite recipe.",404,null);
                 }
             }
         }

@@ -42,11 +42,15 @@
         public function isFavouriteRecipe($user_id, $rec_id) {
             $query = "Select * from " . $this->table_name . " where user_id = " . $user_id . " and rec_id = " . $rec_id;
 
+            //print_r("Query=".$query);
             $prepared_query = $this->conn->prepare($query);
 
-            $count = $prepared_query->execute();
+            $prepared_query->execute();
 
-            if($count) {
+            $num = $prepared_query->rowCount();
+
+            //print("Result = " . $num);
+            if($num>0) {
                 return true;
             } else {
                 return false;

@@ -22,8 +22,8 @@
 
         print_r("Token-".$token);
 
-        //$user_id = $user_session->getUserIdFromToken($token);
-        $user_id = $user_session->getUserIdFromToken("e3d08d7c12461ab8b0a27c7cf7d777921");
+        $user_id = $user_session->getUserIdFromToken($token);
+        //$user_id = $user_session->getUserIdFromToken("e3d08d7c12461ab8b0a27c7cf7d777921");
 
         if ($user_id != 0 || $user_id != null) {
             //print_r("Hello before user found");
